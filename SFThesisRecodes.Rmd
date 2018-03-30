@@ -1,0 +1,230 @@
+---
+title: "SFThesis"
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+maindir <-"C:/Users/Jose/OneDrive/OKCupid"
+scriptsdir <-(file.path(maindir,"scripts"))
+resultsdir <-(file.path(maindir,"results"))
+datadir <- (file.path(maindir,"data"))
+#setwd(maindir)
+knitr::opts_chunk$set(echo = TRUE)
+options(digits = 2)
+secondSmall <-read.csv(file.path(datadir,"secondSmall.csv"))
+knitr::opts_chunk$set(echo = TRUE)
+library(psych)
+library(car)
+
+
+```
+
+#Questions For Thesis
+Questions originally selected to be looked at for thesis
+```{r Questions for Thesis}
+myvars <- c("q12", "q17", "q21","q35", "q36","q106","q122", "q144", "q149", "q152", "q204", "q275", "q294", "q309", "q322", "q323", "q324", "q325", "q326", "q327", "q350", "q352", "q357", "q358", "q360", "q366", "q393", "q444", "q605", "q627", "q1121", "q1128", "q1158", "q1222", "q1447", "q1688", "q4043", "q6413", "q7077", "q7273", "q8054", "q8439", "q12822", "q12832", "q14649", "q14913", "q15565", "q15701", "q15764", "q16371", "q18633", "q18682", "q18691", "q18840", "q18841", "q18902", "q18979", "q18984", "q19236", "q19446", "q19574", "q19832", "q19854", "q19874", "q20021", "q20534", "q22206", "q22991", "q23233", "q24682", "q25294", "q27915", "q28426", "q28820", "q30207", "q33107", "q33593", "q34536", "q35856", "q36045", "q37772", "q38296", "q38646", "q41953", "q42524", "q43261", "q49053", "q54016", "q57717", "q57724", "q59426", "q60500", "q60577", "q61598", "q68307", "q69186", "q69429", "q73389", "q80594", "q81307", "q83114", "q83660", "q83677", "q85272", "q85315", "q85706", "q85999", "q232388", "q19691", "q60394", "q81014", "q1536", "q19691", "q20930", "q401", "q1495", "q15261", "q15778", "q16288","q51155", "q61705", "q67641", "q68235", "q70968", "q47122", "p_trusting", "p_explove",  "q1688","q23618", "q33870", "q37748", "q458", "q56163","q62454", "q47379", "q61666", "q65062", "q1185", "q20135", "q34207", "q35660", "q46091", "q55929", "q20424", "q55587", "q81710", "q83392")
+
+dems <- c("d_relationship", "d_gender", "d_orientation", "d_age", "d_country", "d_ethnicity", "lf_for", "lf_single", "lf_want")
+
+newdata <- secondSmall[myvars]
+demographics<- secondSmall[dems]
+attach(newdata)
+
+```
+#Recodes
+
+use \" for answers with apostrophes or R will not be able to read it
+Answers rated in relation to attachment styles/romantic preferences
+0=less attachment/interest in long-term monogamy, 1=secure attachment/interest in long-term monogamy
+
+```{r Recodes}
+
+newdata$q12<-recode(q12, "'Yes'=0; 'No' =1")
+newdata$q35<-recode(q35, "'Love'=1; 'Sex' =0")
+newdata$q17<-recode(q17, "'Yes'=0; 'No' =1")
+newdata$q21<-recode(q21, "'Yes'=0; 'No' =1")
+newdata$q36<-recode(q36, "'Yes'=0; 'No' =1")
+newdata$q106<-recode(q106, "'Yes'=0; 'No' =1")
+newdata$q122<-recode(q122, "'A lot'=0; 'A little' =.5; 'Not at all' =1")
+newdata$q144<-recode(q144, "'Yes'=0; 'No' =1")
+newdata$q149<-recode(q149, "'Passion'=0; 'Dedication' =1")
+newdata$q152<-recode(q152, "'Yes'=1; 'No' =0")
+newdata$q204<-recode(q204, "'the ability to reproduce'=0; 'the ability to orgasm' =1")
+newdata$q275<-recode(q275, "'Yes'=1; 'No' =0")
+newdata$q294<-recode(q294, "'Having good sex'=0; 'Having similar political beliefs' =1")
+newdata$q309<-recode(q309, "'Yes'=0; 'No' =1")
+newdata$q322<-recode(q322, "'Yes'=0; 'No' =1")
+newdata$q323<-recode(q323, "'Not really confident'=0; 'Confident' =.5; 'Super confident' =1")
+newdata$q324<-recode(q324, "'I agree.' =0; 'I disagree.' =1")
+newdata$q325<-recode(q325, "'Yes'=0; 'No' =1")
+newdata$q326<-recode(q326, "'Yes'=1; 'No' =0")
+newdata$q327<-recode(q327, "'I become less attached.'=0; 'I become more attached.' =0; 'It stays about the same.' =1; \"I told you. I'm a virgin.\" =.5")
+newdata$q350<-recode(q350, "'Yes'=1; 'No' =0")
+newdata$q352<-recode(q352, "'Extremely hot'=0; 'Extremely honest' =1")
+newdata$q357<-recode(q357, "'Drinks and groping'=0; 'Coffee and chit-chat' =1")
+newdata$q358<-recode(q358, "'Yes'=1; 'No' =0")
+newdata$q393<-recode(q393, "'Yes'=1; 'No' =0")
+newdata$q444<-recode(q444, "'Yes'=0; 'No' =1")
+newdata$q605<-recode(q605, "'Yes'=1; 'No' =0")
+newdata$q627<-recode(q627, "'Yes'=0; 'No' =1")
+newdata$q1158<-recode(q1158, "'Yes'=0; 'No' =1")
+newdata$q1447<-recode(q1447, "'Yes'=0; 'No' =1; \"I'm Not Sure\" =.5")
+newdata$q1688<-recode(q1688, "'Yes'=1; 'No' =0")
+newdata$q4043<-recode(q4043, "'Yes'=0; 'No' =1; \"I'm Not Sure\" =.5")
+newdata$q6413<-recode(q6413, "'Yes'=0; 'No' =1")
+newdata$q7077<-recode(q7077, "'Sex'=0; 'Sleeping' =1")
+newdata$q7273<-recode(q7273, "'Yes'=1; 'No' =0; \"I'm a virgin\" = .5")
+newdata$q8054<-recode(q8054, "'Yes'=1; 'No' =0")
+newdata$q8439<-recode(q8439, "'Take advantage of the situation'=0; 'Absolutely nothing' =1")
+newdata$q12822<-recode(q12822, "'Yes'=0; 'No' =1")
+newdata$q12832<-recode(q12832, "'Yes'=1; 'No' =0")
+newdata$q14649<-recode(q14649, "'Yes'=1; 'No' =0")
+newdata$q14913<-recode(q14913, "'Yes'=0; 'No' =1")
+newdata$q15701<-recode(q15701, "'Yes'=0; 'No' =1")
+newdata$q15764<-recode(q15764, "'Yes'=0; \"I'm Not Sure\" = .5; 'No' =1")
+newdata$q16371<-recode(q16371, "'Accept / Are open to non-monogamous relationships.'=0; \"Refuse / Aren't interested in open relationships.\" =1; 'Are hesitant, but would consider it.' =.5")
+newdata$q18691<-recode(q18691, "'Yes'=1; \"I'm Not Sure\" = .5; 'No' =0")
+newdata$q18902<-recode(q18902, "'Yes' =1; \"I'm Not Sure\" = .5; 'No' =0")
+newdata$q19236<-recode(q19236, "'Yes'=0; 'No' =1")
+newdata$q19574<-recode(q19574, "'Yes'=0; 'No' =1")
+newdata$q19832<-recode(q19832, "'Yes, no matter what.'=1; 'Depends on the circumstances. Distance, time, etc' = .5; \"No, they're not a part of my life anymore.\" =0")
+newdata$q19854<-recode(q19854, "'Yes'=0; 'No' =1")
+#newdata$q--<-recode(q---, "' Lots of relationships'=0; 'One true love' =1")
+newdata$q20021<-recode(q20021, "'Someone for tonight'=0; 'Someone to go out with' = .5; 'Someone to come home to' =1")
+newdata$q20534<-recode(q20534, "'Yes' =0; \"I'm Not Sure\" = .5; 'No' =1")
+newdata$q22206<-recode(q22206, "'Yes' =0; \"I'm not sure, it depends...\" = .5; 'No way!' =1")
+newdata$q22991<-recode(q22991, "'Yes' =1; \"I'm Not Sure\" = .5; 'No' =0")
+newdata$q23233<-recode(q23233, "'Yes, absolutely' =1; 'Probably not' = 0; 'No' =0")
+newdata$q24682<-recode(q24682, "'True' =0; 'False' =1")
+newdata$q25294<-recode(q25294, "'Sure, why not?' =0; 'Depends on the person.' = .5; 'Absolutely NOT.' =1")
+newdata$q27915<-recode(q27915, "'Yes' =0; 'Not sure / maybe' = .5; 'No' =1")
+newdata$q28426<-recode(q28426, "'Yes' =1; \"I'm Not Sure\" = .5; 'No' =0")
+newdata$q33593<-recode(q33593, "'Yes' =0; 'No' =1")
+newdata$q34536<-recode(q34536, "'Casual dates, more frequent' =0; 'Serious relationship, less frequent' =1")
+newdata$q38296<-recode(q38296, "'Yes.' =0; \"I am already totally 'natural' in this way.\" = .5; 'No.' =1")
+newdata$q38646<-recode(q38646, "'Yes.' =0; \"I am already totally 'natural' in this way.\" = .5; 'No.' =1")
+newdata$q41953<-recode(q41953, "'One night' =0; 'A few months to a year' = .5; 'Several years' =1; 'The rest of my life' =1")
+newdata$q42524<-recode(q42524, "'Yes.' =0; 'No.' =1")
+newdata$q54016<-recode(q54016, "'Yes.' =0; 'No.' =1")
+newdata$q57717<-recode(q57717, "'Yes.' =1; 'No.' =0")
+newdata$q60500<-recode(q60500, "'Yes.' =0; 'No.' =1")
+newdata$q60577<-recode(q60577, "'Yes.' =0; 'No.' =1")
+newdata$q61598<-recode(q61598, "'Yes.' =0; 'No.' =1")
+newdata$q69186<-recode(q69186, "'Yes.' =1; \"I've never had sex with anyone.\" =.5; 'No.' =0")
+newdata$q69429<-recode(q69429, "'Yes.' =0; 'No.' =1")
+newdata$q73389<-recode(q73389, "'Yes.' =0; 'No.' =1")
+newdata$q80594<-recode(q80594, "'Yes.' =1; 'No.' =0")
+newdata$q81307<-recode(q81307, "'Yes.' =0; 'No.' =1")
+newdata$q83677<-recode(q83677, "'Yes.' =0; 'No.' =1")
+newdata$q85272<-recode(q85272, "'I need you.' =0; 'I want you.' =1")
+newdata$q85315<-recode(q85315, "'Yes.' =1; \"I haven't had a past relationship.\" =.5; 'No.' =0")
+newdata$q85706<-recode(q85706, "'Explore both relationships simultaneously.' =0; 'End the old relationship and pursue the new one.' =0; 'Continue current relationship, ignore attraction.' =1")
+newdata$q85999<-recode(q85999, "'Wanting no sex with me at all would be worse.' =0; 'Wanting me only for casual sex would be worse.' =1")
+newdata$q232388<-recode(q232388, "\"I'm not friends with any of them.\" =0; \"I'm friends with a few of them.\" =.5; \"I don't have any ex-boyfriends/ex-girlfriends.\" =.5; \"I'm friends with all/most of them.\" =1")
+newdata$q19691<-recode(q19691, "'Low' =0; 'Neither high nor low' =.5; 'High' =1")
+newdata$q60394<-recode(q60394, "'Yes.' =1; 'It depends upon the situation.' =.5; 'No.' =0")
+newdata$q81014<-recode(q81014, "'Yes.' =0; 'It would depend upon the nature of the break up.' =.5; 'No.' =1")
+newdata$q1536<-recode(q1536, "'Slow to trust, until worth is proven.' =0; \"I don't know.\" =.5; 'Quick to trust, until proven wrong.' =1")
+newdata$q366<-recode(q366, "'Dating multiple people at once' =0; 'Dating one person at a time' =1; \"I only have serious relationships, I don't 'date'\"=1")
+newdata$q360<-recode(q360, "'False' =0; 'True' =1")
+newdata$q59426<-recode(q59426, "'All of the time.' =0; 'When I was certain the relationship was ending.' =0; 'When the relationship was not going well.' =0; 'After the relationship was formally terminated.' =1")
+newdata$q1121<-recode(q1121, "'Yes, and they both knew.' =.5; \"Yes, and I didn't tell at least one of them.\" =0; 'No.' =1")
+newdata$q1222<-recode(q1222, "'Someone who turns you on.' =0; 'Someone for whom you would do anything.' =1; \"Someone you feel like you've known forever.\" =1; 'Someone with goals similar to yours.' = 1")
+newdata$q18979<-recode(q18979, "'Yes, they have it coming!' =0; \"No, I'd dump them on the spot.\" =.5; \"No, I'd confront them.\" =1; 'Maybe, if one of their friends is cute.' = .5")
+newdata$q19446<-recode(q19446, "'Yes, and I still do.' =1; 'No, and I never will.' =1; \"Yes, I have done it, but don't any more.\" =.5; 'No, but I suppose I might.' =.5")
+newdata$q1128<-recode(q1128, "'Yes, even in secret.' =0; \"No, it's wrong.\" =1; \"No, but I don't think it's inherently wrong.\" =.5; 'Yes, but only if everybody knew.' =.5")
+newdata$q15565<-recode(q15565, "'Yes' =0; 'No' =1")
+newdata$q18682<-recode(q18682, "'Yes' =0; 'No' =1")
+newdata$q18841<-recode(q18841, "'No.' =0; 'Yes, but only if the sex had been good.' =.5; 'Yes, but only if I liked that person.' =1")
+newdata$q18840<-recode(q18840, "'Awful, and I have emotional issues as a result.' =0; 'Wonderful!' =1; \"Not great, but I'm no worse for the wear.\" =.25; 'It was okay.' =.75")
+newdata$q18984<-recode(q18984, "'Yes, still waiting on a second chance!' =0; 'Yes, a little.' =.5; 'No, never.' =1")
+newdata$q83114<-recode(q83114, "'Yes.' =0; 'No.' =1")
+newdata$q83660<-recode(q83660, "'Yes.' =0; 'No.' =1")
+newdata$q57724<-recode(q57724, "'Yes.' =0; 'No.' =1")
+newdata$q49053<-recode(q49053, "'Less than one year.' =0; 'More than five years.' =1; \"I've never been in a romantic relationship.\" =.5; 'One to five years.' =.5")
+newdata$q36045<-recode(q36045, "'No way.' =0; 'Get married yes, settle down no.' =.5; 'Get married no, settle down yes.' =1; 'Absolutely.' =1")
+newdata$q37772<-recode(q37772, "'Playing the field' =0; 'Polyamory' =.5; 'An open relationship' =.5; 'Monogamy' =1")
+newdata$q19874<-recode(q19874, "'0-6 months' =0; '6-12 months' =.5; \"I've never been in a relationship\" =.5; '12+ months' =1")
+newdata$q30207<-recode(q30207, "'Yes, absolutely.' =0; 'Yes, a bit.' =.5; \"No, it's fine.\" =1; \"No, it's underrated.\" =0")
+newdata$q33107<-recode(q33107, "'I have open relationships only'= 0; 'Yes, I like that type of polygamy.' =.5; 'I could be convinced by the right people' =.5; 'I am commited to total monogamy' =1")
+newdata$q18633<-recode(q18633, "'Yes' =1; \"I'm Not Sure\" = .5; 'I never feel entirely complete' =.5; 'No' =0")
+newdata$q28820<-recode(q28820, "'Have great sex' =0; 'Have great ideas' =.5; 'Have great friends' =1; 'Have great love' =1")
+newdata$q68307<-recode(q68307, "'Low.' =0; 'Medium.' =.5; 'Zero.' =1; 'High.' =1")
+newdata$q43261<-recode(q43261, "'I am my own person.' =0; 'I consider their opinion but go my own way.' =1; 'I always do what my parents say.' =0; 'I almost always do what my parents think is best.' =.5")
+newdata$q35856<-recode(q35856, "'Yes.' =1; 'Only if there were good reasons for no contact.' =.5; 'No.' =0")
+newdata$q19691.1<-recode(q19691.1, "'Low' =0; 'Neither high nor low' =.5; 'High' =1")
+newdata$q20930<-recode(q20930, "'Below average' =0; 'Average' =.5; 'Very, very high' =1; 'Higher than average'=1")
+
+
+newdata$q47122<-recode(q47122, "'My mother.' =1; 'Someone else.' =0; 'My father.' =1; 'Another relative.' =.5")
+newdata$q401<-recode(q401, "'Yes' =1; 'No' =0")
+newdata$q1495<-recode(q1495, "'Family' =1; 'Friends' =0")
+newdata$q15261<-recode(q15261, "'Yes' =1; 'No' =0")
+newdata$q15778<-recode(q15778, "'Yes' =1; 'No' =0; \"I'm Not Sure\" =.5")
+newdata$q51155<-recode(q51155, "'Yes.' =1; 'No.' =0; 'Maybe, if they promised to somehow pay me.'=.5")
+newdata$q61705<-recode(q61705, "'Yes.' =1; 'No.' =0; 'Maybe.'=.5")
+newdata$q68235<-recode(q68235, "'Yes.' =1; 'No.' =0")
+newdata$q67641<-recode(q67641, "'Very important.' =1; 'Somewhat important.' =.5; 'Not important.' =0; 'I have no family.' =.5")
+newdata$q70968<-recode(q70968, "'Try to reschedule the date.' =1; 'Try to reschedule the funeral.' =.5; 'Go on the date and skip the funeral.' =0; 'Take the date to the funeral.
+' =.5")
+newdata$q1688.1<-recode(q1688.1, "'Yes' =1; 'No' =0")
+#newdata$q23618<-recode(q23618, "'Yes' =1; 'No' =0")
+newdata$q33870<-recode(q33870, "'Yes' =1; 'No' =0")
+newdata$q37748<-recode(q37748, "'Yes, within reason.' =1; 'No' =0; 'Yes, without question.' =0")
+newdata$q458<-recode(q458, "'Yes' =0; 'No' =1")
+newdata$q56163<-recode(q56163, "\"I'd be hopeful that they would make the next move.\" =1; \"I'd assume they're busy and leave them alone.\" =1; \"I'd try to contact them repeatedly.\" =0; \"I'd ignore them from now on.\" =0")
+newdata$q62454<-recode(q62454, "'Yes' =0; 'No' =1")
+newdata$q47379<-recode(q47379, "'Decisions made jointly through consensus.' =1; 'Distribution based upon traditional gender roles.' =.5; 'I would make most of the decisions.' =0; 'My partner would make most of the decisions.' =0")
+newdata$q61666<-recode(q61666, "'Not at all important.' =1; 'Somewhat important.' =.5; 'Very important.' =0")
+newdata$q65062<-recode(q65062, "'Yes' =0; 'No' =1")
+newdata$q1185<-recode(q1185, "'Yes' =1; 'No' =0")
+newdata$q20135<-recode(q20135, "'I like to just let it happen' =1; \"I'm indifferent / not sure\" =.5; 'I love it and want it very much' =0; 'I try to avoid it' =0")
+newdata$q34207<-recode(q34207, "'Open Book' =1; \"I'm Not Sure\" =.5; 'Secretive' =0; 'Somewhere In Between' =.5")
+newdata$q35660<-recode(q35660, "'Always' =1; 'Usually' =1; 'Rarely' =0; 'Never' =0")
+newdata$q46091<-recode(q46091, "\"I'd tell them how I feel and we'd go from there.\" =1; \"I'd do nothing and hope it all works itself out.\" =.5; \"I'd break off relations.\" =0; \"I'd use their love for all it's worth.\" =0")
+newdata$q55929<-recode(q55929, "'Yes' =0; 'No' =1")
+newdata$q20424<-recode(q20424, "'Yes' =0; 'No' =1")
+newdata$q55587<-recode(q55587, "'Yes.' =1; 'No.' =0")
+newdata$q81710<-recode(q81710, "'Yes.' =1; 'No.' =0")
+newdata$q83392<-recode(q83392, "'Yes' =0; 'No' =1")
+newdata$q16288<-recode(q16288, "\"Yes, I'd be dating them not their family.\" =0; 'No, What the heck are they hiding?' =1; 'Dunno, depends.'=.5")
+
+w <- which( sapply( newdata, 
+                    class ) == 'factor' )
+
+newdata[w] <- lapply( newdata[w], 
+                   function(x)
+                     as.numeric(as.character(x)) )
+
+#Reverse code certain questions (anxious and avoidant attachment scales)
+columnsToReverse <- c("q1185", "q15701", "q19236", "q20135", 
+"q34207", 
+"q35660", "q4043", 
+"q444", 
+"q46091", 
+"q55929", 
+"q57724", "q85706", 
+"q20424",
+"q83392","q15764", 
+"q1688", 
+"q18633", 
+"q18984", 
+"q23618", 
+"q33870", 
+"q37748", 
+"q458", 
+"q56163", 
+"q61598", 
+"q62454", 
+"q85272", 
+"q47379", 
+"q61666", "q69429", 
+"q59426", "q24682"
+,"q83114")
+newdata[,columnsToReverse] = lapply(columnsToReverse,  function(x) 1 - newdata[, x])
+
+write.csv(newdata,"soniaRecodes.csv", row.names = FALSE)
+```
