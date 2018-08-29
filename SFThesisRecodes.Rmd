@@ -14,23 +14,23 @@ datadir <- (file.path(maindir,"data"))
 #setwd(maindir)
 knitr::opts_chunk$set(echo = TRUE)
 options(digits = 2)
-secondSmall <-read.csv(file.path(datadir,"secondSmall.csv"))
-knitr::opts_chunk$set(echo = TRUE)
+library(data.table)
+#FullData<- read.csv2("NOTsecondSmall.csv", header = TRUE)
+#FullData <-fread("NOTsecondSmall.csv", header = TRUE)
+#FullData[1:3, 1:4]
+FullData <- read.csv("NOTsecondsmall.csv")
 library(psych)
 library(car)
-
-
 ```
-
 #Questions For Thesis
 Questions originally selected to be looked at for thesis
 ```{r Questions for Thesis}
-myvars <- c("q12", "q17", "q21","q35", "q36","q106","q122", "q144", "q149", "q152", "q204", "q275", "q294", "q309", "q322", "q323", "q324", "q325", "q326", "q327", "q350", "q352", "q357", "q358", "q360", "q366", "q393", "q444", "q605", "q627", "q1121", "q1128", "q1158", "q1222", "q1447", "q1688", "q4043", "q6413", "q7077", "q7273", "q8054", "q8439", "q12822", "q12832", "q14649", "q14913", "q15565", "q15701", "q15764", "q16371", "q18633", "q18682", "q18691", "q18840", "q18841", "q18902", "q18979", "q18984", "q19236", "q19446", "q19574", "q19832", "q19854", "q19874", "q20021", "q20534", "q22206", "q22991", "q23233", "q24682", "q25294", "q27915", "q28426", "q28820", "q30207", "q33107", "q33593", "q34536", "q35856", "q36045", "q37772", "q38296", "q38646", "q41953", "q42524", "q43261", "q49053", "q54016", "q57717", "q57724", "q59426", "q60500", "q60577", "q61598", "q68307", "q69186", "q69429", "q73389", "q80594", "q81307", "q83114", "q83660", "q83677", "q85272", "q85315", "q85706", "q85999", "q232388", "q19691", "q60394", "q81014", "q1536", "q19691", "q20930", "q401", "q1495", "q15261", "q15778", "q16288","q51155", "q61705", "q67641", "q68235", "q70968", "q47122", "p_trusting", "p_explove",  "q1688","q23618", "q33870", "q37748", "q458", "q56163","q62454", "q47379", "q61666", "q65062", "q1185", "q20135", "q34207", "q35660", "q46091", "q55929", "q20424", "q55587", "q81710", "q83392")
+myvars <- c("q12", "q17", "q21","q35", "q36","q106","q122", "q144", "q149", "q152", "q204", "q275", "q294", "q309", "q322", "q323", "q324", "q325", "q326", "q327", "q350", "q352", "q357", "q358", "q360", "q366", "q393", "q444", "q605", "q627", "q1121", "q1128", "q1158", "q1222", "q1447", "q1688", "q4043", "q6413", "q7077", "q7273", "q8054", "q8439", "q12822", "q12832", "q14649", "q14913", "q15565", "q15701", "q15764", "q16371", "q18633", "q18682", "q18691", "q18840", "q18841", "q18902", "q18979", "q18984", "q19236", "q19446", "q19574", "q19832", "q19854", "q19874", "q20021", "q20534", "q22206", "q22991", "q23233", "q24682", "q25294", "q27915", "q28426", "q28820", "q30207", "q33107", "q33593", "q34536", "q35856", "q36045", "q37772", "q38296", "q38646", "q41953", "q42524", "q43261", "q49053", "q54016", "q57717", "q57724", "q59426", "q60500", "q60577", "q61598", "q68307", "q69186", "q69429", "q73389", "q80594", "q81307", "q83114", "q83660", "q83677", "q85272", "q85315", "q85706", "q85999", "q232388", "q19691", "q60394", "q81014", "q1536", "q20930", "q401", "q1495", "q15261", "q15778", "q16288","q51155", "q61705", "q67641", "q68235", "q70968", "q47122", "p_trusting", "p_explove", "q33870", "q37748", "q458", "q56163","q62454", "q47379", "q61666", "q65062", "q1185", "q20135", "q34207", "q35660", "q46091", "q55929", "q20424", "q55587", "q81710", "q83392")
 
 dems <- c("d_relationship", "d_gender", "d_orientation", "d_age", "d_country", "d_ethnicity", "lf_for", "lf_single", "lf_want")
 
-newdata <- secondSmall[myvars]
-demographics<- secondSmall[dems]
+newdata <- FullData[myvars]
+demographics<- FullData[dems]
 attach(newdata)
 
 ```
@@ -38,7 +38,8 @@ attach(newdata)
 
 use \" for answers with apostrophes or R will not be able to read it
 Answers rated in relation to attachment styles/romantic preferences
-0=less attachment/interest in long-term monogamy, 1=secure attachment/interest in long-term monogamy
+0=less attachment/interest in long-term monogamy
+1=secure attachment/interest in long-term monogamy
 
 ```{r Recodes}
 
@@ -72,7 +73,6 @@ newdata$q605<-recode(q605, "'Yes'=1; 'No' =0")
 newdata$q627<-recode(q627, "'Yes'=0; 'No' =1")
 newdata$q1158<-recode(q1158, "'Yes'=0; 'No' =1")
 newdata$q1447<-recode(q1447, "'Yes'=0; 'No' =1; \"I'm Not Sure\" =.5")
-newdata$q1688<-recode(q1688, "'Yes'=1; 'No' =0")
 newdata$q4043<-recode(q4043, "'Yes'=0; 'No' =1; \"I'm Not Sure\" =.5")
 newdata$q6413<-recode(q6413, "'Yes'=0; 'No' =1")
 newdata$q7077<-recode(q7077, "'Sex'=0; 'Sleeping' =1")
@@ -155,7 +155,6 @@ newdata$q28820<-recode(q28820, "'Have great sex' =0; 'Have great ideas' =.5; 'Ha
 newdata$q68307<-recode(q68307, "'Low.' =0; 'Medium.' =.5; 'Zero.' =1; 'High.' =1")
 newdata$q43261<-recode(q43261, "'I am my own person.' =0; 'I consider their opinion but go my own way.' =1; 'I always do what my parents say.' =0; 'I almost always do what my parents think is best.' =.5")
 newdata$q35856<-recode(q35856, "'Yes.' =1; 'Only if there were good reasons for no contact.' =.5; 'No.' =0")
-newdata$q19691.1<-recode(q19691.1, "'Low' =0; 'Neither high nor low' =.5; 'High' =1")
 newdata$q20930<-recode(q20930, "'Below average' =0; 'Average' =.5; 'Very, very high' =1; 'Higher than average'=1")
 
 
@@ -170,17 +169,17 @@ newdata$q68235<-recode(q68235, "'Yes.' =1; 'No.' =0")
 newdata$q67641<-recode(q67641, "'Very important.' =1; 'Somewhat important.' =.5; 'Not important.' =0; 'I have no family.' =.5")
 newdata$q70968<-recode(q70968, "'Try to reschedule the date.' =1; 'Try to reschedule the funeral.' =.5; 'Go on the date and skip the funeral.' =0; 'Take the date to the funeral.
 ' =.5")
-newdata$q1688.1<-recode(q1688.1, "'Yes' =1; 'No' =0")
-#newdata$q23618<-recode(q23618, "'Yes' =1; 'No' =0")
+newdata$q1688<-recode(q1688, "'Yes' =1; 'No' =0")
+
 newdata$q33870<-recode(q33870, "'Yes' =1; 'No' =0")
 newdata$q37748<-recode(q37748, "'Yes, within reason.' =1; 'No' =0; 'Yes, without question.' =0")
 newdata$q458<-recode(q458, "'Yes' =0; 'No' =1")
 newdata$q56163<-recode(q56163, "\"I'd be hopeful that they would make the next move.\" =1; \"I'd assume they're busy and leave them alone.\" =1; \"I'd try to contact them repeatedly.\" =0; \"I'd ignore them from now on.\" =0")
-newdata$q62454<-recode(q62454, "'Yes' =0; 'No' =1")
+newdata$q62454<-recode(q62454, "'Yes.' =0; 'No.' =1")
 newdata$q47379<-recode(q47379, "'Decisions made jointly through consensus.' =1; 'Distribution based upon traditional gender roles.' =.5; 'I would make most of the decisions.' =0; 'My partner would make most of the decisions.' =0")
 newdata$q61666<-recode(q61666, "'Not at all important.' =1; 'Somewhat important.' =.5; 'Very important.' =0")
 newdata$q65062<-recode(q65062, "'Yes' =0; 'No' =1")
-newdata$q1185<-recode(q1185, "'Yes' =1; 'No' =0")
+newdata$q1185<-recode(q1185, "'Yes' =1; 'No' =0; 'Some' = .5")
 newdata$q20135<-recode(q20135, "'I like to just let it happen' =1; \"I'm indifferent / not sure\" =.5; 'I love it and want it very much' =0; 'I try to avoid it' =0")
 newdata$q34207<-recode(q34207, "'Open Book' =1; \"I'm Not Sure\" =.5; 'Secretive' =0; 'Somewhere In Between' =.5")
 newdata$q35660<-recode(q35660, "'Always' =1; 'Usually' =1; 'Rarely' =0; 'Never' =0")
@@ -189,7 +188,7 @@ newdata$q55929<-recode(q55929, "'Yes' =0; 'No' =1")
 newdata$q20424<-recode(q20424, "'Yes' =0; 'No' =1")
 newdata$q55587<-recode(q55587, "'Yes.' =1; 'No.' =0")
 newdata$q81710<-recode(q81710, "'Yes.' =1; 'No.' =0")
-newdata$q83392<-recode(q83392, "'Yes' =0; 'No' =1")
+newdata$q83392<-recode(q83392, "'Yes.' =0; 'No.' =1")
 newdata$q16288<-recode(q16288, "\"Yes, I'd be dating them not their family.\" =0; 'No, What the heck are they hiding?' =1; 'Dunno, depends.'=.5")
 
 w <- which( sapply( newdata, 
@@ -206,13 +205,12 @@ columnsToReverse <- c("q1185", "q15701", "q19236", "q20135",
 "q444", 
 "q46091", 
 "q55929", 
-"q57724", "q85706", 
+"q57724", "q85706",
 "q20424",
 "q83392","q15764", 
 "q1688", 
 "q18633", 
 "q18984", 
-"q23618", 
 "q33870", 
 "q37748", 
 "q458", 
@@ -226,5 +224,7 @@ columnsToReverse <- c("q1185", "q15701", "q19236", "q20135",
 ,"q83114")
 newdata[,columnsToReverse] = lapply(columnsToReverse,  function(x) 1 - newdata[, x])
 
-write.csv(newdata,"soniaRecodes.csv", row.names = FALSE)
+#write.csv(newdata, file = "bigsoniaRecodes.csv", row.names = FALSE)
+#write.csv(demographics, file = "bigdemographicdata.csv", row.names = FALSE)
+
 ```

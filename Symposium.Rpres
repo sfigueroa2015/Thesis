@@ -1,0 +1,89 @@
+Attachment Style and Romantic Relationship Preference in OKCupid Users
+========================================================
+author: Sonia Figueroa
+date: 
+autosize: true
+font-family: "Arial"
+  
+Working with the Data
+======================
+- 70,00 users, 2,600 questions
+  - Kirkegaard: cognitive abilities, religion, politics
+  - Scraper selected users mostly at random
+  - Most users answered few questions
+- Many NA values
+  - Some samples had 90% missing data for certain questions
+  - How to work with missing values?
+
+Using R
+======================
+- Statistical programming language
+- Difficulties
+- Questions selected
+  - Recoded
+  - Categorized
+
+Attachment Style
+========================================================
+- Influences interpersonal connections
+- Secure
+- Insecure
+  - Avoidant
+  - Anxious
+  - Fearful
+
+Types of Romantic Relationships
+========================================================
+- Relationship Length
+  - Long-term
+  - Short-term
+- Number of Partners  
+  - Monogamous
+  - Multiple partners
+
+Alpha Levels for Scales
+=======================
+```{r}
+library(psych)
+newdata<-read.csv("soniaRecodes.csv")
+myKeys<-list(long=c("q326", "q360", "q1222", "q18691", "q36045", "q12", "q17", "q21", "q122", "q144", "q152", "q309", "q322", "q324", "q1447", "q6413", "q7077", "q8439", "q14913", "q18841", "q69186", "q81307", "q83677", "q35", "q352", "q357", "q19874", "q20021"))#"q49053","q444", "q7273", "q323","q15701", "q19446", "q294", "q204", "q358", "q34536", "q627",  "q57717","q42524", "q149"
+long<-scoreItems(myKeys,newdata)
+long["alpha"]
+```
+
+K-Nearest Neighbor
+==================
+- Predictive modeling 
+- Use doppelganger 
+- How many people are predicted to be securely attached?
+```{r echo=FALSE}
+library(caret)
+library(class)
+soniaScales<-read.csv("recodedScales.csv")
+soniaScales$AttachmentStyle <-as.factor(soniaScales$AttachmentStyle)
+n <- nrow(soniaScales)
+trainIndex <- sample(1:n, size = round(0.6*n), replace=FALSE)
+trainOKC <- soniaScales[trainIndex ,]
+testOKC <- soniaScales[-trainIndex ,]
+trainOKCNoA <- trainOKC[,-c(9:13)]
+testOKCNoA <- testOKC[,-c(9:13)]
+knnres <- knn(trainOKCNoA, testOKCNoA, trainOKC$AttachmentStyle)
+table(knnres,testOKC$AttachmentStyle)
+```
+
+Results
+========================================================
+
+- Attachment Style
+  - 63% Secure
+  - 18% Avoidant
+  - 17% Anxious
+  - 2% Fearful
+  
+*************************
+
+- Relationships
+  - Preference for long-term relationships
+  - Preference for monogamous relationships
+  - Relationship length and monogamy preference were correlated
+

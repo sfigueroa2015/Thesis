@@ -1,0 +1,179 @@
+---
+title: "SoniaKnn"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+library(class)
+library(psych)
+library(tidyverse)
+library(knitr)
+library(dprep)
+library(rpart)
+library(e1071)
+library(caret)
+library(caTools)
+#library(dplyr)
+maindir <- setwd("C:/Users/Jose/OneDrive/OKCupid")
+maindir <- getwd()
+scriptsdir <- (file.path(maindir,"scripts"))
+resultsdir <- (file.path(maindir,"results"))
+datadir <- (file.path(maindir,"data"))
+#setwd(maindir)
+knitr::opts_chunk$set(echo = TRUE)
+options(digits = 2)
+soniaScales<-read_csv("bigsoniaDemScales.csv")
+demographicScales<-read_csv("bigsoniaDemScales.csv")
+set.seed(33458)
+library(car)
+attach(soniaScales)
+```
+#Recoding Categorical Variables
+```{r}
+attach(soniaScales)
+soniaScales$d_orientation<-recode(soniaScales$d_orientation, 
+"'Hetero_male'=1;'Hetero_female'=1; 'Bisexual_male'=2;'Bisexual_female'=2;
+'Gay_male'=3;'Gay_female'=3;'Straight'=1;'Bisexual'=2;'Asexual'=4;'Gay'=3;
+'Sapiosexual'=1;'Pansexual'=2;'Questioning'=2; 'Heteroflexible'=2;'Queer'=3; else=4")
+
+soniaScales$d_gender<-recode(soniaScales$d_gender,"'Man'=1;'Cis Man'=1;'Woman'=2;
+'Cis Woman'=2; 'Androgynous'=3; 'Non-binary'=3; 'Gender Nonconforming'=3;
+'Genderqueer'=3; 'Trans Woman'=3;'Transfeminine'=3;'Transgender'=3;
+'Trans Man'=3;'Other'=3; else=3")
+
+soniaScales$d_ethnicity<-recode(soniaScales$d_ethnicity,"'White'=1; 'Black'=2;
+'Mixed'=3; 'Pacific Islander'=4; 'Hispanic / Latin'=5; 'Indian'=6; 'Asian'=7; 
+'Middle Eastern'=8; 'Native American'=9; 'Other'=3; else=3")
+
+soniaScales$d_country<-recode(soniaScales$d_country,"'US'=1;'United States'=1; 
+'AK'=1;'AZ'=1; 'AR'=1; 'CA'=1;'CO'=1;'CT'=1; 'DE'=1;'FL'=1;'GA'=1;'HI'=1;
+'ID'=1;'IL'=1;'IN'=1;'IA'=1;'KS'=1;'KY'=1;'LA'=1;'ME'=1;'MD'=1;'MA'=1;'MI'=1;
+'MN'=1;'MS'=1;'MO'=1;'MT'=1;'NE'=1;'NV'=1;'NH'=1;'NJ'=1;'NM'=1;'NY'=1;'NC'=1;
+'ND'=1;'OH'=1;'OK'=1;'OR'=1;'PA'=1;'RI'=1;'SC'=1;'SD'=1;'TN'=1;'TX'=1;'UT'=1;
+'VT'=1;'VA'=1;'WA'=1;'WV'=1;'WI'=1;'WY'=1;'AS'=1;'DC'=1;'FM'=1;'GU'=1;'MH'=1;
+'MP'=1;'PW'=1;'PR'=1;'VI'=1;'AE'=1;'AA'=1;'AE'=1;'AE'=1;'AE'=1;'AP'=1;
+'Canada'=2;'Alberta'=2;'British Columbia'=2;'Manitoba'=2;'New Brunswick'=2; 
+'Newfoundland and Labrador'=2; 'Nova Scotia'=2;'Ontario'=2;'Prince Edward Island'=2;
+'Quebec'=2; 'Saskatchewan'=2;
+'UK'=3;'United Kingdom'=3;'MX'=4;'Mexico'=4;else=5")
+
+soniaScales$d_relationship<-recode(soniaScales$d_relationship, "'Single'=1; else=2")
+
+soniaScales$Friends <- grepl("For  new friends", lf_for) 
+    soniaScales$Friends <- as.numeric(soniaScales$Friends)
+soniaScales$STDate <- grepl("short-term dating", lf_for) 
+    soniaScales$STDate <- as.numeric(soniaScales$STDate)
+soniaScales$CSex <- grepl("casual sex", lf_for) 
+    soniaScales$CSex <- as.numeric(soniaScales$CSex)
+soniaScales$LTDate <- grepl("long-term dating", lf_for) 
+    soniaScales$LTDate <- as.numeric(soniaScales$LTDate)
+soniaScales<- soniaScales[,-c(4,7:9)]
+
+write.csv(soniaScales, "recodedScales.csv")
+```
+#k-NN
+```{r}
+soniaScales$AttachmentStyle <-as.factor(soniaScales$AttachmentStyle)
+n <- nrow(soniaScales)
+trainIndex <- sample(1:n, size = round(0.6*n), replace=FALSE)
+trainOKC <- soniaScales[trainIndex ,]
+testOKC <- soniaScales[-trainIndex ,]
+```
+
+```{r}
+#Getting rid of columns to predict attachment style
+trainOKCNoA <- trainOKC[,-c(9:13)]
+testOKCNoA <- testOKC[,-c(9:13)]
+```
+
+```{r}
+knnres <- knn(trainOKCNoA, testOKCNoA, trainOKC$AttachmentStyle, k=70)
+table(knnres) # predicted outcomes
+table(testOKC$AttachmentStyle) # actual outcomes
+table(knnres,testOKC$AttachmentStyle)
+
+```
+#AUC and ROC for Monogamy
+##Secure
+```{r}
+AUCModelSECM<-colAUC(testOKCNoA$mono, testOKC$AttachmentStyle=="secure", plotROC = TRUE)
+AUCModelSECM
+```
+##Avoidant
+```{r}
+AUCModelAVDM<-colAUC(testOKCNoA$mono, testOKC$AttachmentStyle=="avoidant", plotROC = TRUE)
+AUCModelAVDM
+```
+##Anxious
+```{r}
+AUCModelANXM<-colAUC(testOKCNoA$mono, testOKC$AttachmentStyle=="anxious", plotROC = TRUE)
+AUCModelANXM
+```
+##Fearful
+```{r}
+AUCModelFEARM<-colAUC(testOKCNoA$mono, testOKC$AttachmentStyle=="fearful", plotROC = TRUE)
+AUCModelFEARM
+```
+##Comparisons
+```{r}
+AUCModelM<-colAUC(testOKCNoA$mono, testOKC$AttachmentStyle, plotROC = TRUE)
+AUCModelM
+```
+#AUC and ROC for Relationship Length
+```{r}
+AUCModelSECL<-colAUC(testOKCNoA$long, testOKC$AttachmentStyle=="secure", plotROC = TRUE)
+AUCModelSECL
+```
+##Secure
+```{r}
+AUCModelAVDL<-colAUC(testOKCNoA$long, testOKC$AttachmentStyle=="avoidant", plotROC = TRUE)
+AUCModelAVDL
+```
+##Anxious
+```{r}
+AUCModelANXL<-colAUC(testOKCNoA$long, testOKC$AttachmentStyle=="anxious", plotROC = TRUE)
+AUCModelANXL
+```
+##Avoidant
+```{r}
+AUCModelFEARL<-colAUC(testOKCNoA$long, testOKC$AttachmentStyle=="fearful", plotROC = TRUE)
+AUCModelFEARL
+
+```
+##Comparisons
+```{r}
+AUCModelL<-colAUC(testOKCNoA$long, testOKC$AttachmentStyle, plotROC = TRUE)
+AUCModelL 
+```
+
+```{r}
+AUCModelL<-colAUC(testOKCNoA$relationships, testOKC$AttachmentStyle, plotROC = TRUE)
+AUCModelL 
+```
+
+#Means and Effect Sizes
+```{r}
+aggregate(soniaScales[-c(1:5, 9:12)], list(AttachmentStyle), mean)
+sd(soniaScales$mono)
+sd(soniaScales$long)
+```
+##Monogamy Score Effect Sizes
+```{r}
+(.84-.80)/.12
+(.84-.74)/.12
+(.84-.88)/.12
+(.88-.80)/.12
+(.88-.74)/.12
+(.80-.74)/.12
+```
+##Length Score Effect Sizes
+```{r}
+(.79-.76)/.1
+(.79-.71)/.1
+(.79-.84)/.1
+(.71-.76)/.1
+(.84-.76)/.1
+(.84-.71)/.1
+````

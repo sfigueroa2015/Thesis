@@ -11,10 +11,9 @@ maindir <-"C:/Users/Jose/OneDrive/OKCupid"
 scriptsdir <-(file.path(maindir,"scripts"))
 resultsdir <-(file.path(maindir,"results"))
 datadir <- (file.path(maindir,"data"))
-#setwd(maindir)
 knitr::opts_chunk$set(echo = TRUE)
 options(digits = 2)
-secondSmall <-read.csv(file.path(datadir,"secondSmall.csv"))
+FullData <-fread("NOTsecondSmall.csv", header = TRUE)
 knitr::opts_chunk$set(echo = TRUE)
 library(psych)
 library(car)
@@ -23,23 +22,22 @@ library(car)
 #Questions For Thesis
 Questions originally selected to be looked at for thesis
 ```{r Questions for Thesis}
-myvars <- c("q12", "q17", "q21","q35", "q36","q106","q122", "q144", "q149", "q152", "q204", "q275", "q294", "q309", "q322", "q323", "q324", "q325", "q326", "q327", "q350", "q352", "q357", "q358", "q360", "q366", "q393", "q444", "q605", "q627", "q1121", "q1128", "q1158", "q1222", "q1447", "q1688", "q4043", "q6413", "q7077", "q7273", "q8054", "q8439", "q12822", "q12832", "q14649", "q14913", "q15565", "q15701", "q15764", "q16371", "q18633", "q18682", "q18691", "q18840", "q18841", "q18902", "q18979", "q18984", "q19236", "q19446", "q19574", "q19832", "q19854", "q19874", "q20021", "q20534", "q22206", "q22991", "q23233", "q24682", "q25294", "q27915", "q28426", "q28820", "q30207", "q33107", "q33593", "q34536", "q35856", "q36045", "q37772", "q38296", "q38646", "q41953", "q42524", "q43261", "q49053", "q54016", "q57717", "q57724", "q59426", "q60500", "q60577", "q61598", "q68307", "q69186", "q69429", "q73389", "q80594", "q81307", "q83114", "q83660", "q83677", "q85272", "q85315", "q85706", "q85999", "q232388", "q19691", "q60394", "q81014", "q1536", "q19691", "q20930", "q401", "q1495", "q15261", "q15778", "q16288","q51155", "q61705", "q67641", "q68235", "q70968", "q47122", "p_trusting", "p_explove",  "q1688","q23618", "q33870", "q37748", "q458", "q56163","q62454", "q47379", "q61666", "q65062", "q1185", "q20135", "q34207", "q35660", "q46091", "q55929", "q20424", "q55587", "q81710", "q83392")
+myvars <- c("q12", "q17", "q21","q35", "q36","q106","q122", "q144", "q149", "q152", "q204", "q275", "q294", "q309", "q322", "q323", "q324", "q325", "q326", "q327", "q350", "q352", "q357", "q358", "q360", "q366", "q393", "q444", "q605", "q627", "q1121", "q1128", "q1158", "q1222", "q1447", "q1688", "q4043", "q6413", "q7077", "q7273", "q8054", "q8439", "q12822", "q12832", "q14649", "q14913", "q15565", "q15701", "q15764", "q16371", "q18633", "q18682", "q18691", "q18840", "q18841", "q18902", "q18979", "q18984", "q19236", "q19446", "q19574", "q19832", "q19854", "q19874", "q20021", "q20534", "q22206", "q22991", "q23233", "q24682", "q25294", "q27915", "q28426", "q28820", "q30207", "q33107", "q33593", "q34536", "q35856", "q36045", "q37772", "q38296", "q38646", "q41953", "q42524", "q43261", "q49053", "q54016", "q57717", "q57724", "q59426", "q60500", "q60577", "q61598", "q68307", "q69186", "q69429", "q73389", "q80594", "q81307", "q83114", "q83660", "q83677", "q85272", "q85315", "q85706", "q85999", "q232388", "q19691", "q60394", "q81014", "q1536", "q20930", "q401", "q1495", "q15261", "q15778", "q16288","q51155", "q61705", "q67641", "q68235", "q70968", "q47122", "p_trusting", "p_explove",  "q23618", "q33870", "q37748", "q458", "q56163","q62454", "q47379", "q61666", "q65062", "q1185", "q20135", "q34207", "q35660", "q46091", "q55929", "q20424", "q55587", "q81710", "q83392")
 
 dems <- c("d_relationship", "d_gender", "d_orientation", "d_age", "d_country", "d_ethnicity", "lf_for", "lf_single", "lf_want")
 
-newdata <- secondSmall[myvars]
-demographics<- secondSmall[dems]
+newdata <- FullData[myvars]
+demographics<- FullData[dems]
 attach(newdata)
-
 ```
 #Recodes
 
 use \" for answers with apostrophes or R will not be able to read it
 Answers rated in relation to attachment styles/romantic preferences
 0=less attachment/interest in long-term monogamy, 1=secure attachment/interest in long-term monogamy
+Reverse score answers for questions in anxious and avoidant attachment scales
 
 ```{r Recodes}
-
 newdata$q12<-recode(q12, "'Yes'=0; 'No' =1")
 newdata$q35<-recode(q35, "'Love'=1; 'Sex' =0")
 newdata$q17<-recode(q17, "'Yes'=0; 'No' =1")
@@ -122,7 +120,6 @@ newdata$q85315<-recode(q85315, "'Yes.' =1; \"I haven't had a past relationship.\
 newdata$q85706<-recode(q85706, "'Explore both relationships simultaneously.' =0; 'End the old relationship and pursue the new one.' =0; 'Continue current relationship, ignore attraction.' =1")
 newdata$q85999<-recode(q85999, "'Wanting no sex with me at all would be worse.' =0; 'Wanting me only for casual sex would be worse.' =1")
 newdata$q232388<-recode(q232388, "\"I'm not friends with any of them.\" =0; \"I'm friends with a few of them.\" =.5; \"I don't have any ex-boyfriends/ex-girlfriends.\" =.5; \"I'm friends with all/most of them.\" =1")
-newdata$q19691<-recode(q19691, "'Low' =0; 'Neither high nor low' =.5; 'High' =1")
 newdata$q60394<-recode(q60394, "'Yes.' =1; 'It depends upon the situation.' =.5; 'No.' =0")
 newdata$q81014<-recode(q81014, "'Yes.' =0; 'It would depend upon the nature of the break up.' =.5; 'No.' =1")
 newdata$q1536<-recode(q1536, "'Slow to trust, until worth is proven.' =0; \"I don't know.\" =.5; 'Quick to trust, until proven wrong.' =1")
@@ -155,8 +152,6 @@ newdata$q43261<-recode(q43261, "'I am my own person.' =0; 'I consider their opin
 newdata$q35856<-recode(q35856, "'Yes.' =1; 'Only if there were good reasons for no contact.' =.5; 'No.' =0")
 newdata$q19691.1<-recode(q19691.1, "'Low' =0; 'Neither high nor low' =.5; 'High' =1")
 newdata$q20930<-recode(q20930, "'Below average' =0; 'Average' =.5; 'Very, very high' =1; 'Higher than average'=1")
-
-
 newdata$q47122<-recode(q47122, "'My mother.' =1; 'Someone else.' =0; 'My father.' =1; 'Another relative.' =.5")
 newdata$q401<-recode(q401, "'Yes' =1; 'No' =0")
 newdata$q1495<-recode(q1495, "'Family' =1; 'Friends' =0")
@@ -198,30 +193,7 @@ newdata[w] <- lapply( newdata[w],
                      as.numeric(as.character(x)) )
 
 #Reverse code certain questions (anxious and avoidant attachment scales)
-columnsToReverse <- c("q1185", "q15701", "q19236", "q20135", 
-"q34207", 
-"q35660", "q4043", 
-"q444", 
-"q46091", 
-"q55929", 
-"q57724", "q85706", 
-"q20424",
-"q83392","q15764", 
-"q1688", 
-"q18633", 
-"q18984", 
-"q23618", 
-"q33870", 
-"q37748", 
-"q458", 
-"q56163", 
-"q61598", 
-"q62454", 
-"q85272", 
-"q47379", 
-"q61666", "q69429", 
-"q59426", "q24682"
-,"q83114")
+columnsToReverse <- c("q1185", "q15701", "q19236", "q20135", "q34207", "q35660", "q4043", "q444", "q46091", "q55929", "q57724", "q85706", "q20424","q83392","q15764", "q1688", "q18633", "q18984", "q23618", "q33870", "q37748", "q458", "q56163", "q61598", "q62454", "q85272", "q47379", "q61666", "q69429", "q59426", "q24682", "q83114")
 newdata[,columnsToReverse] = lapply(columnsToReverse,  function(x) 1 - newdata[, x])
 ```
 
@@ -232,16 +204,16 @@ newdata[,columnsToReverse] = lapply(columnsToReverse,  function(x) 1 - newdata[,
 ##Alpha for Monogamy Preference
 ```{r Alpha for Monogamy Preference}
 myKeys<-list(mono=c("q106", "q1128", "q1158","q23233", "q85315", "q41953", "q8054", "q37772", "q36", "q325", "q366", "q1121", "q16371", "q18902", "q33107", "q393", "q25294"))
-mono<-scoreItems(myKeys,newdata)
+mono<-scoreItems(myKeys,newdata, delete = FALSE)
 lengths(mono)
-#mono["alpha"]
-#mono["item.cor"]
-#alpha=0.68
+mono["alpha"]
+mono["item.cor"]
+#alpha=0.7
 ```
 
 ```{r}
 myKeys<-list(mono=c("q106", "q1128", "q1158","q23233", "q85315", "q41953", "q37772", "q36", "q325", "q366", "q1121", "q16371", "q18902", "q33107", "q393", "q25294"))  #"q8054", 
-mono<-scoreItems(myKeys,newdata)
+mono<-scoreItems(myKeys,newdata, delete=FALSE)
 #mono["alpha"]
 #mono["item.cor"]
 #alpha=0.7
@@ -249,7 +221,7 @@ mono<-scoreItems(myKeys,newdata)
 
 ```{r}
 myKeys<-list(mono=c("q106", "q1128", "q23233", "q85315", "q41953", "q37772", "q36", "q325", "q366", "q1121", "q16371", "q18902", "q33107", "q393", "q25294"))#"q8054","q1158"
-mono<-scoreItems(myKeys,newdata)
+mono<-scoreItems(myKeys,newdata, delete=FALSE)
 #mono["alpha"]
 #mono["item.cor"]
 #alpha=0.7
@@ -257,110 +229,90 @@ mono<-scoreItems(myKeys,newdata)
 
 ```{r}
 myKeys<-list(mono=c("q1128", "q23233", "q85315", "q41953", "q37772", "q36", "q325", "q366", "q1121", "q16371", "q18902", "q33107", "q393", "q25294")) #"q1158","q106","q8054", 
-mono<-scoreItems(myKeys,newdata)
+mono<-scoreItems(myKeys,newdata, delete = FALSE)
 #mono["alpha"]
 #mono["item.cor"]
-#alpha=0.71
+#alpha=0.72
+
 ```
-The alpha for the mono scale was `r mono["alpha"]`.
+
 ```{r}
 myKeys<-list(mono=c( "q1128", "q23233", "q85315", "q41953", "q37772", "q36", "q325", "q366", "q1121", "q16371", "q18902", "q33107", "q25294")) # "q393", "q106", "q1158", "q8054",
-mono<-scoreItems(myKeys,newdata)
+mono<-scoreItems(myKeys,newdata, delete = FALSE)
 mono["alpha"]
 mono["item.cor"]
 MonoScores<-mono["scores"]
 lengths(mono)
-#alpha=0.75
-#alpha does not exceed 0.75
+#alpha=0.76
+#alpha does not exceed 0.76
 monogamyScores <- mono[["scores"]]
 ```
+The alpha for the monogamy preference scale was `r mono["alpha"]`.
+
 ##Alpha for Relationship Length
 ```{r Alpha for Relationship Length}
 myKeys<-list(long=c("q326", "q360", "q1222", "q18691", "q34536", "q36045", "q49053", "q57717", "q12", "q17", "q21", "q122", "q144", "q152", "q309", "q322", "q323", "q324", "q358", "q444", "q627", "q1447", "q6413", "q7077", "q7273", "q8439", "q14913", "q15701", "q18841", "q19446", "q42524", "q69186", "q81307", "q83677", "q35", "q149", "q204", "q294", "q352", "q357", "q19874", "q20021"))
-long<-scoreItems(myKeys,newdata)
+long<-scoreItems(myKeys,newdata, delete=FALSE)
 lengths(long)
-#long["alpha"]
-#long["item.cor"]
-#alpha=0.75
-```
-
-```{r}
-myKeys<-list(long=c("q326", "q360", "q1222", "q18691", "q34536", "q36045", "q49053", "q57717", "q12", "q17", "q21", "q122", "q144", "q152", "q309", "q322", "q324", "q358", "q444", "q627", "q1447", "q6413", "q7077", "q7273", "q8439", "q14913", "q15701", "q18841", "q19446","q42524", "q69186", "q81307", "q83677", "q35", "q149", "q204", "q294", "q352", "q357", "q19874", "q20021"))#"q323",
-long<-scoreItems(myKeys,newdata)
-#long["alpha"]
-#long["item.cor"]
-#alpha=0.76
-```
-
-```{r}
-myKeys<-list(long=c("q326", "q360", "q1222", "q18691", "q34536", "q36045", "q49053", "q57717", "q12", "q17", "q21", "q122", "q144", "q152", "q309", "q322", "q324", "q358", "q444", "q627", "q1447", "q6413", "q7077", "q7273", "q8439", "q14913", "q15701", "q18841", "q42524", "q69186", "q81307", "q83677", "q35", "q149", "q204", "q294", "q352", "q357", "q19874", "q20021"))# "q323","q19446",
-long<-scoreItems(myKeys,newdata)
-#long["alpha"]
-#long["item.cor"]
-#alpha=0.76
-```
-
-```{r}
-myKeys<-list(long=c("q326", "q360", "q1222", "q18691", "q34536", "q36045", "q49053", "q57717", "q12", "q17", "q21", "q122", "q144", "q152", "q309", "q322", "q324", "q358", "q444", "q627", "q1447", "q6413", "q7077", "q8439", "q14913", "q15701", "q18841", "q42524", "q69186", "q81307", "q83677", "q35", "q149", "q204", "q294", "q352", "q357", "q19874", "q20021")) #"q19446","q7273","q323"
-long<-scoreItems(myKeys,newdata)
-#long["alpha"]
-#long["item.cor"]
-#alpha=0.78
-```
-
-```{r}
-myKeys<-list(long=c("q326", "q360", "q1222", "q18691", "q34536", "q36045", "q57717", "q12", "q17", "q21", "q122", "q144", "q152", "q309", "q322", "q324", "q358", "q444", "q627", "q1447", "q6413", "q7077", "q8439", "q14913", "q15701", "q18841", "q42524", "q69186", "q81307", "q83677", "q35", "q149", "q204", "q352", "q357", "q19874", "q20021")) #"q19446","q7273","q323","q294"
-long<-scoreItems(myKeys,newdata)
-#long["alpha"]
-#long["item.cor"]
-#alpha=0.79
-```
-
-```{r}
-myKeys<-list(long=c("q326", "q360", "q1222", "q18691", "q34536", "q36045", "q57717", "q12", "q17", "q21", "q122", "q144", "q152", "q309", "q322", "q324", "q444", "q627", "q1447", "q6413", "q7077", "q8439", "q14913", "q15701", "q18841", "q42524","q69186", "q81307", "q83677", "q35", "q149", "q352", "q357", "q19874", "q20021")) #"q19446","q7273","q323","q294","q204"
-long<-scoreItems(myKeys,newdata)
-#long["alpha"]
-#long["item.cor"]
-#alpha=0.81
-```
-
-```{r}
-myKeys<-list(long=c("q326", "q360", "q1222", "q18691", "q36045", "q12", "q17", "q21", "q122", "q144", "q152", "q309", "q322", "q324", "q444", "q1447", "q6413", "q7077", "q8439", "q14913", "q15701", "q18841", "q42524", "q69186", "q81307", "q83677", "q35", "q149", "q352", "q357", "q19874", "q20021")) #"q19446","q7273","q323","q294","q204","q627","q358","q57717","q49053","q34536"
-long<-scoreItems(myKeys,newdata)
-#long["alpha"]
-#long["item.cor"]
-#alpha=0.82
-```
-
-```{r}
-myKeys<-list(long=c("q326", "q360", "q1222", "q18691", "q36045", "q12", "q17", "q21", "q122", "q144", "q152", "q309", "q322", "q324", "q444", "q1447", "q6413", "q7077", "q8439", "q14913", "q15701", "q18841", "q69186", "q81307", "q83677", "q35", "q149", "q352", "q357", "q19874", "q20021")) #"q19446","q7273","q323","q294","q204","q627","q358","q57717","q49053","q34536", "q42524"
-long<-scoreItems(myKeys,newdata)
-#long["alpha"]
-#long["item.cor"]
-#alpha=0.83
-```
-The alpha for the long scale was `r long["alpha"]`.
-```{r}
-myKeys<-list(long=c("q326", "q360", "q1222", "q18691", "q36045", "q12", "q17", "q21", "q122", "q144", "q152", "q309", "q322", "q324", "q444", "q1447", "q6413", "q7077", "q8439", "q14913", "q15701", "q18841", "q69186", "q81307", "q83677", "q35", "q352", "q357", "q19874", "q20021")) #"q19446","q7273","q323","q294","q204","q627","q358","q57717","q49053","q34536", "q42524","q149"
-long<-scoreItems(myKeys,newdata)
 long["alpha"]
 long["item.cor"]
-lengths(long)
-#alpha=0.84
-#alpha does not go higher than 0.84
+alpha=0.68
 ```
+
+```{r}
+myKeys<-list(long=c("q326", "q360", "q1222", "q18691", "q34536", "q36045",  "q57717", "q12", "q17", "q21", "q122", "q144", "q152", "q309", "q322", "q324", "q358", "q627", "q1447", "q6413", "q7077", "q8439", "q14913", "q18841", "q19446","q42524", "q69186", "q81307", "q83677", "q35", "q149", "q204", "q294", "q352", "q357", "q19874", "q20021"))#"q49053","q444", "q7273", "q323","q15701"
+long<-scoreItems(myKeys,newdata, delete=FALSE)
+long["alpha"]
+long["item.cor"]
+#alpha=0.71
+```
+
+```{r}
+myKeys<-list(long=c("q326", "q360", "q1222", "q18691", "q34536", "q36045",  "q57717", "q12", "q17", "q21", "q122", "q144", "q152", "q309", "q322", "q324", "q358", "q627", "q1447", "q6413", "q7077", "q8439", "q14913", "q18841","q42524", "q69186", "q81307", "q83677", "q35", "q149", "q352", "q357", "q19874", "q20021"))#"q49053","q444", "q7273", "q323","q15701", "q19446", "q294", "q204"
+long<-scoreItems(myKeys,newdata, delete=FALSE)
+long["alpha"]
+long["item.cor"]
+#alpha=0.72
+```
+
+```{r}
+myKeys<-list(long=c("q326", "q360", "q1222", "q18691", "q34536", "q36045",  "q57717", "q12", "q17", "q21", "q122", "q144", "q152", "q309", "q322", "q324", "q627", "q1447", "q6413", "q7077", "q8439", "q14913", "q18841","q42524", "q69186", "q81307", "q83677", "q35", "q149", "q352", "q357", "q19874", "q20021"))#"q49053","q444", "q7273", "q323","q15701", "q19446", "q294", "q204", "q358"
+long<-scoreItems(myKeys,newdata, delete=FALSE)
+long["alpha"]
+long["item.cor"]
+#alpha=0.73
+```
+
+```{r}
+myKeys<-list(long=c("q326", "q360", "q1222", "q18691", "q36045", "q12", "q17", "q21", "q122", "q144", "q152", "q309", "q322", "q324", "q1447", "q6413", "q7077", "q8439", "q14913", "q18841","q42524", "q69186", "q81307", "q83677", "q35", "q149", "q352", "q357", "q19874", "q20021"))#"q49053","q444", "q7273", "q323","q15701", "q19446", "q294", "q204", "q358", "q34536", "q627",  "q57717"
+long<-scoreItems(myKeys,newdata, delete=FALSE)
+long["alpha"]
+long["item.cor"]
+#alpha=0.73
+```
+
+```{r}
+myKeys<-list(long=c("q326", "q360", "q1222", "q18691", "q36045", "q12", "q17", "q21", "q122", "q144", "q152", "q309", "q322", "q324", "q1447", "q6413", "q7077", "q8439", "q14913", "q18841", "q69186", "q81307", "q83677", "q35", "q352", "q357", "q19874", "q20021"))#"q49053","q444", "q7273", "q323","q15701", "q19446", "q294", "q204", "q358", "q34536", "q627",  "q57717","q42524", "q149"
+long<-scoreItems(myKeys,newdata, delete = FALSE)
+long["alpha"]
+long["item.cor"]
+#alpha=0.75
+#alpha does not go higher than 0.75
+```
+The alpha for the relationship length preference scale was `r long["alpha"]`.
+
 ##Alpha For Remaining Relationship Questions
 ```{r Alpha for remaining relationship questions}
 #all remaining relationship questions that were not commented out
 #data(newdata)
 myKeys<-list(relationships=c("q326", "q360", "q1222", "q18691", "q36045", "q12", "q17", "q21", "q122", "q144", "q152", "q309", "q322", "q324", "q1447", "q6413", "q7077", "q8439", "q14913", "q15701", "q18841","q69186", "q81307", "q83677", "q35","q352", "q357", "q19874", "q20021","q1128", "q23233", "q85315", "q41953", "q37772", "q36", "q325", "q366", "q1121", "q16371", "q18902", "q33107", "q25294"))
-relationships<-scoreItems(myKeys,newdata)
+relationships<-scoreItems(myKeys,newdata, delete=FALSE)
 relationships["alpha"]
 relationships["item.cor"]
-#alpha when runnning the remaining set of questions from the relationship set in total is 0.88
-#alpha does not exceed 0.88
-```
+#alpha when runnning the remaining set of questions from the relationship set in total is 0.83
+#alpha does not exceed 0.83
 
+```
 I realized I forgot to include "p_explove" when working with Tiny
 When I included it, alpha dropped from .89 to 0.07 in Tiny
 Personality variables will be excluded from these calculations of alpha due to their massive effect on (decreasing) alpha, as was also seen in Karly's dataset
@@ -373,50 +325,54 @@ The attachment questions will feature three scales: a family/childhood scale (wh
 ##Alpha for Childhood and Family Relations
 ```{r}
 myKeys<-list(family=c("q350", "q401", "q1495", "q15261", "q15778", "q16288", "q18840", "q19832", "q22991", "q43261", "q51155", "q61705", "q67641", "q68235", "q70968", "q47122"))
-family<-scoreItems(myKeys,newdata)
-#family["alpha"]
-#family["item.cor"]
+family<-scoreItems(myKeys,newdata, delete = FALSE)
+family["alpha"]
+family["item.cor"]
 
-#alpha=0.57
-#q15778, q16288, q51155, q61705, q68235 had no variance and were deleted 
+#alpha=0.49
+#47122 had no variance and was deleted 
 ```
 
 ```{r}
 myKeys<-list(family=c("q350", "q401", "q1495", "q15778", "q16288", "q18840", "q19832", "q43261", "q51155", "q67641", "q68235", "q70968", "q47122")) #"q61705","q15261","q22991"
-family<-scoreItems(myKeys,newdata)
+family<-scoreItems(myKeys,newdata, delete = FALSE)
 family["alpha"]
 family["item.cor"]
 
-#alpha=0.6
+#alpha=0.53
 ```
+The alpha for the childhood/family scale was `r family["alpha"]`.
 ##Alpha for Anxious Attachment Style
 ```{r}
 myKeys<-list(anx=c("q15764", "q1688", "q18633", "q18984", "q33870", "q37748", "q458", "q56163", "q61598", "q62454", "q85272", "q47379", "q59426", "q20424", "q24682"))#"q61666", "q69429", "q83114"
 
-anx<-scoreItems(myKeys,newdata)
+anx<-scoreItems(myKeys,newdata, delete = FALSE)
 anx["alpha"]
 anx["item.cor"]
 lengths(anx)
 
-#q62454 had no variance and was deleted
-#alpha=.58
+#alpha=.6
 ```
-The alpha for the anx scale was `r anx["alpha"]`.
+The alpha for the anxious attachent scale was `r anx["alpha"]`.
 
 ##Alpha for Avoidant Attachment Style
 ```{r}
-myKeys<-list(avoid=c("q1185", "q15701", "q19236", "q20135", "q35660", "q4043", "q444", "q46091", "q57724", "q85706", "q20424","q24682")) #"q83114","q83392","q55929","q34207"
-avoid<-scoreItems(myKeys,newdata)
+myKeys<-list(avoid=c(
+  #"q1185", 
+  "q15701", "q19236", "q20135", "q35660", "q4043", "q444", "q46091", "q57724", "q85706", "q20424","q24682", #"q83114",
+                     "q83392" #,"q55929"
+                     #,"q34207"
+                     )) 
+avoid<-scoreItems(myKeys, newdata, delete = FALSE)
 avoid["alpha"]
 avoid["item.cor"]
 
-#q55929 and q83392 had no variance and were deleted
-#alpha=.42
+#q55929 had no variance and was deleted
+#alpha=.44
 ```
-The alpha for the avoidant scale was `r avoid["alpha"]`.
-
+The alpha for the avoidant attachment scale was `r avoid["alpha"]`.
 #Scale Scores
-```{r Scores}
+```{r}
 monogamyScores <- mono[["scores"]]
 lengthScores <- long[["scores"]]
 relationshipScores <- relationships[["scores"]]
@@ -430,15 +386,45 @@ SFscaleScores <-cbind(monogamyScores,
                       anxiousScores,
                       avoidantScores)
 ```
+
+```{r}
+#Monogamy Scores 
+  min(monogamyScores)
+  max(monogamyScores)
+  median(monogamyScores)
+  mean(monogamyScores)
+  sd(monogamyScores)
+#Length Scores
+  min(lengthScores)
+  max(lengthScores)
+  median(lengthScores)
+  mean(lengthScores)
+  sd(lengthScores)
+cor(monogamyScores, lengthScores)
+#Attachment Scores
+min(childhoodScores)
+  max(childhoodScores)
+  mean(childhoodScores)
+  sd(childhoodScores)
+min(avoidantScores)
+  max(avoidantScores)
+  mean(avoidantScores)
+  sd(avoidantScores)
+min(anxiousScores)
+  max(anxiousScores)
+  mean(anxiousScores)
+  sd(anxiousScores)
+
+```
 #Attachment Style Classification
 ```{r Attachment Style Classification}
-#median(childhoodScores)=.86
+#median(childhoodScores)=.86 for 2000sample
 
 #A basic way of looking at attachment from three classifications:
-#AttachmentCategory <- ifelse(childhoodScores > .85, print("secure"), ifelse(anxiousScores > avoidantScores, print("anxious"), print("avoidant")))
+#AttachmentCategory <- ifelse(childhoodScores > .86, print("secure"), ifelse(anxiousScores > avoidantScores, print("anxious"), print("avoidant")))
 
 #If I want to include a fearful attachment style, I should use something like this:
-AttachmentCategory <- ifelse (childhoodScores > .85, 
+AttachmentCategory <- ifelse (childhoodScores > .86, 
                                   print("secure"), 
                       ifelse
                            ((anxiousScores < 1.2*avoidantScores & 
@@ -451,41 +437,30 @@ AttachmentCategory <- ifelse (childhoodScores > .85,
                                   print("avoidant"), 
                                   print("anxious")
                              )))
+
 #Secure attacchments are usually 50-70% of population, depending on study
 #prevelance of each type of insecure attachment varies depending on study and number of insecure attachments identified
 #Generally, more people have an avoidant attachment style than anxious, and more people have an anxious attachment style than a fearful attachment style
 #The difference between each insecure attachment style prevalence varies based on the study
+colnames(AttachmentCategory)[colnames(AttachmentCategory)=="family"] <- "AttachmentStyle" #rename column
 
-colnames(AttachmentCategory)[colnames(AttachmentCategory)=="family"] <- "AttachmnetStyle"
-colnames(AttachmentCategory)
+#Calulate percentage of each attachment style
+(sum(AttachmentCategory=="secure"))/66271 #percent securely attached
+(sum(AttachmentCategory=="avoidant"))/66271 #percent avoidantly attached
+(sum(AttachmentCategory=="anxious"))/66271 #percent anxiously attached
+(sum(AttachmentCategory=="fearful"))/66271 #percent fearfully attached
 
-sum(AttachmentCategory=="secure")
-sum(AttachmentCategory=="avoidant")
-sum(AttachmentCategory=="anxious")
-sum(AttachmentCategory=="fearful")
 ```
-Using this function on the data, approxiamately 65.6% of people are securely attached, 14% are avoidantly attached, 15.4% are anxiously attached, and 5% are fearfully attached, which is similar to what other researchers have found.
-
+Using this function on the data, approxiamately 63.3% of people are securely attached, 18% are avoidantly attached, 17.2% are anxiously attached, and 1.5% are fearfully attached, which is similar to what other researchers have found.
 
 #Means of Scale Scores
 ```{r}
-library(tibble)
-library(magrittr)
-library(dplyr)
 SFscaleScores %>% 
-  as.tibble() %>% 
+  as.tibble() %>%
   summarise_all(funs(mean))
 
-#write.csv(SFscaleScores,"SFscaleScores.csv",
- #         row.names = FALSE)
-```
-
-
-```{r Data Table}
-library(papeR)
-library(knitr)
-
-kable(summarize(newdata, type = "numeric"))
+write.csv(SFscaleScores,"SFscaleScores.csv",
+          row.names = FALSE)
 ```
 #Demographics
 Below is demographic information about users and certain preferences they are looking for in their potential matches
@@ -513,3 +488,6 @@ sum(grepl("For  new friends", lf_for))
 demographicScales <- cbind(demographics, AttachmentCategory, SFscaleScores)
 #write.csv(demographicScales,"soniaDemScales.csv", row.names = FALSE)
 ```
+
+
+
